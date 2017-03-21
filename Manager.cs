@@ -75,7 +75,7 @@ namespace TipClicker
 
             bool clickState = false;
 
-            String clickmap = "CLICKMAP/TIPCLICKER";
+            String clickmap = "CLICKMAP/TIPCLICKER\r\n" + Program.version.ToString().Replace(",", ".") +"~Levelname~author~Description :)~How to start~time";
 
             while (true)
             {
@@ -111,15 +111,51 @@ namespace TipClicker
 
         public static void PlayerTest(string filepath)
         {
-
-            Console.WriteLine("Press Shift key for start...");
-            while (Control.ModifierKeys != key1) { Thread.Sleep(1); }
-
             int counter = 0;
             string line;
 
             System.IO.StreamReader file =
                new System.IO.StreamReader(filepath);
+            Console.WriteLine("\n\n\n");
+            while ((line = file.ReadLine()) != null)
+            {
+                if (counter == 0 && line != "CLICKMAP/TIPCLICKER")
+                {
+                    Console.WriteLine("Error! It's not a clickmap!");
+                }
+                if (counter == 1 && line != "" && line != " ")
+                {
+                    string[] info = line.Split(new Char[] { Char.Parse("~") });
+                    float v = 0;
+                    if (info.Length > 0 && float.TryParse(info[0], out v) && v >= Program.version)
+                    {
+                        Console.WriteLine("Attention! Click map file is old.\n\n");
+                    }
+                    if (info.Length >= 6)
+                    {
+                        Console.WriteLine("Name: " + info[1]);
+                        Console.WriteLine("Author: " + info[2]);
+                        Console.WriteLine("Description: " + info[3]);
+                        Console.WriteLine("How to start: " + info[4]);
+                        Console.WriteLine("Size: " + info[5]);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Description error");
+                    }
+                }
+                counter++;
+            }
+            Console.WriteLine("Clicks: " + ((counter - 2) / 2));
+            Console.WriteLine("\n\n\n");
+
+            Console.WriteLine("Press Shift key for start...");
+            while (Control.ModifierKeys != key1) { Thread.Sleep(1); }
+            Console.WriteLine("\n\n");
+            counter = 0;
+            line = "";
+
+            file = new System.IO.StreamReader(filepath);
 
             long milliseconds = DateTime.UtcNow.Ticks / TimeSpan.TicksPerMillisecond;
 
@@ -127,7 +163,8 @@ namespace TipClicker
 
             while ((line = file.ReadLine()) != null && !exit)
             {
-                if (counter != 0)
+                
+                if (counter != 0 && counter != 1)
                 {
                     long l1 = long.Parse(line.Split(new Char[] { Char.Parse("=") })[1]);
                     String l2 = line.Split(new Char[] { Char.Parse("=") })[0];
